@@ -1,30 +1,73 @@
 package web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import web.models.User;
+import web.service.UserService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/")
 public class UserController {
 
-	@RequestMapping(value = "hello", method = RequestMethod.GET)
-	public String printWelcome(ModelMap model) {
-		List<String> messages = new ArrayList<>();
-		messages.add("Hello!");
-		messages.add("I'm Spring MVC-SECURITY application");
-		messages.add("5.2.0 version by sep'19 ");
-		model.addAttribute("messages", messages);
-		return "hello";
-	}
+	@Autowired
+	private UserService userService;
+
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String loginPage() {
         return "login";
     }
+
+	@RequestMapping("admin")
+	public String adminPage() {
+		return "admin";
+	}
+
+	@RequestMapping("admin/users")
+	public String usersShow(Model model) {
+		model.addAttribute("users", userService.listUsers());
+		return "users";
+	}
+
+	@GetMapping("admin/users/add")
+	public String newUser(Model model){
+		model.addAttribute("user", new User());
+		model.addAttribute("roles", userService.getRoles());
+		return "add";
+	}
+	@PostMapping("admin/users/add")
+	public String addUser(@ModelAttribute("user") User user){
+		userService.add(user);
+		return "redirect:/admin/users";
+	}
+
+	@GetMapping("admin/users/{id}/edit")
+	public String showUser(@PathVariable("id") long id, Model model) {
+		model.addAttribute("user", userService.show(id));
+		model.addAttribute("roles", userService.getRoles());
+		return "edit";
+	}
+
+	@PatchMapping("admin/users/{id}")
+	public String updateUser(@ModelAttribute("user") User user, @PathVariable("id") long id) {
+		userService.update(id, user);
+		return "redirect:/admin/users";
+	}
+
+	@DeleteMapping("admin/users/{id}")
+	public String removeUser(@PathVariable("id") long id) {
+		userService.remove(id);
+		return "redirect:/admin/users";
+	}
+
+	@RequestMapping("user")
+	public String userPage(Principal principal, Model model) {
+		model.addAttribute("user", userService.findByName(principal.getName()));
+		return "user";
+	}
 
 }
