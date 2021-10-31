@@ -10,24 +10,23 @@ import web.service.UserService;
 import java.security.Principal;
 
 @Controller
-@RequestMapping("/")
+//@RequestMapping("/")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 
-
-    @RequestMapping(value = "login", method = RequestMethod.GET)
+    @GetMapping("login")
     public String loginPage() {
         return "login";
     }
 
-	@RequestMapping("admin")
+	@GetMapping("admin")
 	public String adminPage() {
 		return "admin";
 	}
 
-	@RequestMapping("admin/users")
+	@GetMapping("admin/users")
 	public String usersShow(Model model) {
 		model.addAttribute("users", userService.listUsers());
 		return "users";
