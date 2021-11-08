@@ -39,20 +39,20 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void remove(long id) {
-        userdao.remove(id);
+    public void remove(User user) {
+        userdao.remove(user);
     }
 
     @Transactional
     @Override
-    public void update(long id, User user) {
-        userdao.update(id, user);
+    public void update(User user) {
+        userdao.update(user);
     }
 
     @Transactional
     @Override
-    public User findByName(String username) {
-        return userdao.findByName(username);
+    public User findByEmail(String email) {
+        return userdao.findByEmail(email);
     }
 
     @Transactional

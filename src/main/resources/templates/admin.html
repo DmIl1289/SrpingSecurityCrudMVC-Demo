@@ -2,23 +2,280 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Панель администратора</title>
 </head>
 <body>
 
-<h1>Админка</h1>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="text-white">
+        <a class="navbar-brand" th:text="${user.getEmail()}">Email</a>
+        <a class="navbar-brand">Роли: </a>
+        <a class="navbar-brand" th:text="${user.getRoles()}">Roles</a>
+    </div>
+    <form class="form-inline" method="post" action="/logout">
+        <button class="btn btn-secondary" type="submit">Выход</button>
+    </form>
+</nav>
 
-<br/>
-<a th:href="@{/user}">Личная информация</a>
-<br/>
-<br/>
-<a th:href="@{/admin/users}">Список пользователей</a>
-<br/>
-<br/>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2">
+            <br>
+            <ul class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <li><a class="nav-link active" id="v-pills-admin-tab" data-toggle="pill"
+                       href="#admin" aria-current="page">Панель администратора</a></li>
+                <li><a class="nav-link" id="v-pills-user-tab" data-toggle="pill"
+                       href="#user">Личная информация</a></li>
+            </ul>
+        </div>
 
-<form method="post" action="/logout">
-    <input type="submit" th:value="Выход"/>
-</form>
+        <div class="col-10">
+            <div class="container">
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="admin">
+                        <br>
+                        <h4>Панель администратора</h4>
+                        <ul class="nav nav-tabs">
+                            <li><a class="nav-link active" id="listOfUsers" data-toggle="tab" href="#userList"
+                                   aria-current="page">Список пользователей</a></li>
+                            <li><a class="nav-link" id="newUser" data-toggle="tab" href="#addNewUser">Добавить
+                                пользователя</a>
+                            </li>
+                        </ul>
 
+                        <div class="tab-content">
+                            <div class="tab-pane fade active show" id="userList">
+                                <table class="table">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Имя</th>
+                                        <th>Фамилия</th>
+                                        <th>Возраст</th>
+                                        <th>Email</th>
+                                        <th>Пароль</th>
+                                        <th>Роли</th>
+                                        <th>Изменить</th>
+                                        <th>Удалить</th>
+                                    </tr>
+                                    <tbody id="table">
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="tab-pane fade" id="addNewUser">
+                                <br>
+                                <div class="col-md-4 mb-3">
+                                    <form id="addForm">
+                                        <div class="form-group">
+                                            <label for="newUserName">Имя</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   id="newUserName"></div>
+
+                                        <div class="form-group">
+                                            <label for="newUserSurName">Фамилия</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   id="newUserSurName"></div>
+
+                                        <div class="form-group">
+                                            <label for="newUserAge">Возраст</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                   id="newUserAge"></div>
+
+                                        <div class="form-group">
+                                            <label for="newUserEmail">Почта</label>
+                                            <input type="email" class="form-control form-control-sm"
+                                                   id="newUserEmail" name="field1"></div>
+
+                                        <div class="form-group">
+                                            <label for="newUserPassword">Пароль</label>
+                                            <input class="form-control form-control-sm"
+                                                   id="newUserPassword" name="field2" required></div>
+
+                                        <div class="form-group">
+                                            <label>Роли: </label>
+                                            <div>
+                                                <th:block th:each="r: ${roles}">
+                                                    <input type="checkbox" th:id="*{r.id}" th:field="*{roles}"
+                                                           th:text="${r.role}" th:value="${r.role}"/>
+                                                </th:block>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group">
+                                        <button type="submit" id="addButton" class="btn btn-success" data-toggle="tab" onclick="addNewUser(); activateTab('userList')">Добавить
+                                            нового пользователя
+                                        </button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="user">
+                        <br>
+                        <h4>Личная информация</h4>
+                        <br>
+                        <table class="table">
+                            <tr>
+                                <th>ID</th>
+                                <th>Имя</th>
+                                <th>Фамилия</th>
+                                <th>Возраст</th>
+                                <th>Email</th>
+                                <th>Пароль</th>
+                                <th>Роли</th>
+                            </tr>
+                            <tbody id="userInfo">
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Изменение пользователя</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Имя:</label>
+                        <input type="text" class="form-control" id="recipient-name" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-surname" class="col-form-label">Фамилия:</label>
+                        <input type="text" class="form-control" id="recipient-surname" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-age" class="col-form-label">Возраст:</label>
+                        <input type="number" class="form-control" id="recipient-age" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-email" class="col-form-label">Почта:</label>
+                        <input type="text" class="form-control" id="recipient-email" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-password" class="col-form-label">Пароли:</label>
+                        <input type="text" class="form-control" id="recipient-password" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Роли: </label>
+                        <div>
+                            <th:block th:each="r: ${roles}">
+                                <input type="checkbox" th:id="${'checkbox'+r.id}" th:field="*{roles}"
+                                       th:text="${r.role}" th:value="${r.role}" autocomplete="off">
+                            </th:block>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="editButton" onclick="editButton()">Изменить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удаление пользователя</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="del-name" class="col-form-label">Имя:</label>
+                        <input type="text" class="form-control" id="del-name" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="del-surname" class="col-form-label">Фамилия:</label>
+                        <input type="text" class="form-control" id="del-surname" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="del-age" class="col-form-label">Возраст:</label>
+                        <input type="number" class="form-control" id="del-age" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="del-email" class="col-form-label">Почта:</label>
+                        <input type="text" class="form-control" id="del-email" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="del-password" class="col-form-label">Пароли:</label>
+                        <input type="text" class="form-control" id="del-password" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Роли: </label>
+                        <div>
+                            <th:block th:each="r: ${roles}">
+                                <input type="checkbox" th:id="${'checkbox'+r.id}" th:field="*{roles}"
+                                       th:text="${r.role}" th:value="${r.role}" disabled/>
+                            </th:block>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-danger" id="delButton" onclick="deleteUser()">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/js/admin.js}"></script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#editButton").click(function () {
+            $("#editModal").modal("hide");
+        });
+    });
+
+    $(function () {
+        $("#delButton").click(function () {
+            $("#deleteModal").modal("hide");
+        });
+    });
+
+    function activateTab(tab){
+        $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+    }
+
+
+</script>
 </body>
 </html>

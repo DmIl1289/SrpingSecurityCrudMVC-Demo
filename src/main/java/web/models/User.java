@@ -1,12 +1,11 @@
 package web.models;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.*;
 
 @Entity
@@ -18,34 +17,56 @@ public class User implements UserDetails {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "name")
-    private String username;
+    @NotEmpty(message = "Укажите имя")
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "surname")
+    @NotEmpty(message = "Укажите фамилию")
+    @Column(name = "surname", nullable = false)
     private String surName;
 
-    @Column(name = "email")
+    @Min(value = 1, message ="Укажите возраст от 1 до 127 лет")
+    @Max(value = 127, message ="Укажите возраст от 1 до 127 лет")
+    @Column(name="age", nullable = false)
+    private int age;
+
+    @NotEmpty(message = "Укажите почту")
+    @Email(message = "Укажите существующую почту")
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @NotEmpty(message = "Необходимо заполнить поле Пароль")
+    @Size(min = 4, message = "Пароль должен быть не менее 4 символов")
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @NotEmpty(message = "Укажите роль")
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    public void addRole(Role role) {
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
-
     public User() {
     }
 
-    public User(String username, String surName, String email, String password, Set<Role> roles) {
-        this.username = username;
+    public User(long id) {
+        this.id = id;
+    }
+
+    public User(String name, String surName, int age, String email, String password, Set<Role> roles) {
+        this.name = name;
         this.surName = surName;
+        this.age = age;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
+
+    public User(Long id, String name, String surName, int age, String email, String password, Set<Role> roles) {
+        this.id = id;
+        this.name = name;
+        this.surName = surName;
+        this.age = age;
         this.email = email;
         this.password = password;
         this.roles = roles;
@@ -59,8 +80,12 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public void setUsername(String name) {
-        this.username = name;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSurName() {
@@ -69,6 +94,14 @@ public class User implements UserDetails {
 
     public void setSurName(String surName) {
         this.surName = surName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getEmail() {
@@ -97,7 +130,7 @@ public class User implements UserDetails {
     public String toString() {
         return "User1{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", username='" + name + '\'' +
                 ", surName='" + surName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
@@ -121,7 +154,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override

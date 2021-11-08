@@ -15,6 +15,15 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     public EntityManager entityManager;
 
+    private List<Role> getListOfRoles(User user) {
+        List<Role> roleList = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            List<Role> found = entityManager.createQuery("from Role where roles=:name", Role.class)
+                    .setParameter("name", role.getRole()).getResultList();
+            roleList.addAll(found);
+        }
+        return roleList;
+    }
 
     @Override
     public List<User> listUsers() {
@@ -29,34 +38,23 @@ public class UserDaoImpl implements UserDao {
         entityManager.persist(user);
     }
 
-    private List<Role> getListOfRoles(User user) {
-        List<Role> roleList = new ArrayList<>();
-        for (Role role : user.getRoles()) {
-            List<Role> found = entityManager.createQuery("from Role where roles=:name", Role.class)
-                    .setParameter("name", role.getRole()).getResultList();
-            roleList.addAll(found);
-        }
-        return roleList;
-    }
-
     @Override
     public User show (long id) {
-        return (User) entityManager.createQuery("from User where id= :ID")
+        return entityManager.createQuery("from User where id= :ID", User.class)
                 .setParameter("ID", id).getSingleResult();
     }
 
     @Override
-    public void remove(long id) {
+    public void remove(User user) {
         entityManager.createQuery("delete User where id=:ID")
-                .setParameter("ID", id).executeUpdate();
+                .setParameter("ID", user.getId()).executeUpdate();
     }
 
     @Override
-    public void update(long id, User user) {
+    public void update(User user) {
         User user1 = entityManager.createQuery("from User where id=:ID", User.class)
-                .setParameter("ID", id).getSingleResult();
-        getListOfRoles(user);
-        user1.setUsername(user.getUsername());
+                .setParameter("ID", user.getId()).getSingleResult();
+        user1.setName(user.getName());
         user1.setSurName(user.getSurName());
         user1.setEmail(user.getEmail());
         user1.setPassword(user.getPassword());
@@ -65,8 +63,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findByName(String username) {
-        return (User)entityManager.createQuery("from User where name=:NAME")
-                .setParameter("NAME", username).getSingleResult();
+    public User findByEmail(String email) {
+        return entityManager.createQuery("from User where email=:NAME", User.class)
+                .setParameter("NAME", email).getSingleResult();
     }
 }
